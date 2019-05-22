@@ -27,7 +27,9 @@ class App extends Component {
     });
   }
 
-  removeCharacter(c){
+
+  removeCharacter(event){
+    let c = parseInt(event.target.dataset.id)
     const newCharacters = this.state.characters.filter( char => char.id !== c);
 
     this.setState({

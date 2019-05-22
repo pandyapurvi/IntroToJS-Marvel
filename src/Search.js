@@ -4,14 +4,30 @@ import request from './data/captain.json';
 // Commented out as this code needed for a working Marvel API
 //const apiKey = '4349118c475b4f8fc68c3a2f780946b5';
 //const searchURL = `https://gateway.marvel.com:443/v1/public/characters?apikey=${apiKey}&`;
+const highlightOriginal = [];
+const highlightBrackets = ['(', ')'];
+class Item extends React.PureComponent {
+  highlighted(){
+    return this.props.highlights.some(str => this.props.r.name.includes(str));
+  }
+  render(){
+    const highlightClass = this.highlighted() ? 'highlighted' : '';
+    const {charData, onClick} = this.props;
+    return (
+      <li data-testid="result" data-name={props.charData.name}
+        className={`${highlightClass} list-group-item d-flex justify-content-between align-items-center`}
+        <span data-testid="res-name">{charData.name}</span>
+        <button
+        data-testid="addBtn"
+        className="btn btn-primary btn-sm"
+        data-id={charData.id}
+        onClick={onClick}>Add</button>
+      </li>
+    )
 
-const Item = (props) => (
-  <li key={props.r.id} data-testid="result" data-name={props.r.name}
-    className={"list-group-item d-flex justify-content-between align-items-center" + (props.highlights.some(str => props.r.name.includes(str)) ? ' highlighted' : '')}>
-    <span data-testid="res-name">{props.r.name}</span>
-    <button data-testid="addBtn" className="btn btn-primary btn-sm" onClick={() => props.onClick(props.r)}>Add</button>
-  </li>
-)
+  }
+
+}
 
 class Search extends Component {
   constructor(props){
@@ -26,13 +42,14 @@ class Search extends Component {
     this.saveQuery = this.saveQuery.bind(this);
     this.removeResult = this.removeResult.bind(this);
     this.toggleHighlight = this.toggleHighlight.bind(this);
+    this.update = this.update.bind(this);
   }
 
   highlights() {
     if (this.state.highlight) {
-      return ['(', ')'];
+      return highlightBrackets;
     } else {
-      return [];
+      return highlightOriginal;
     }
   }
 
@@ -75,13 +92,20 @@ class Search extends Component {
     });
   }
 
-  update(c){
-    this.removeResult(c.id);
-    this.props.add(c);
+  update(event){
+    const charId = parseInt(event.target.dataset.id);
+    this.removeResult(charId);
+
+    const character = this.state.results.find(c=> c.id===charId);
+    this.props.add(character);
   }
 
   results(){
-    return this.state.results.map(r => <Item highlights={this.highlights()} r={r} key={r.id} onClick={() => this.update(r)} />)
+    return this.state.results.map(c => <Item
+      highlights={this.highlights()}
+      charData={c}
+       key={c.id}
+      onClick={this.update} />)
   }
 
   renderResults(){

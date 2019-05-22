@@ -12,7 +12,11 @@ const Character = (props) => (
           src={props.character.thumbnail.path+"."+props.character.thumbnail.extension}
         />
       <p className="card-text" data-testid="descr">{props.character.description}</p>
-      <button className="btn btn-outline-secondary" data-testid="deleteButton" onClick={() => props.removeCharacter(props.character.id)}> Delete</button>
+      <button
+      className="btn btn-outline-secondary"
+      data-testid="deleteButton"
+      data-id={props.character.id} 
+      onClick={props.removeCharacter}> Delete</button>
     </div>
   </div>
 );
